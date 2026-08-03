@@ -17,6 +17,17 @@ npm run dev
 The root endpoint is a health response; MCP clients should use
 `http://localhost:8787/mcp`.
 
+## Automatic deployment
+
+`.github/workflows/deploy.yml` runs the tests and type-check on pull requests.
+After a change reaches `main`, it deploys the Worker automatically. Configure
+these GitHub Actions secrets before the first production deployment:
+
+- `CLOUDFLARE_API_TOKEN`: a Cloudflare API token permitted to deploy this Worker.
+- `CLOUDFLARE_ACCOUNT_ID`: `db49260b5af1f9d1fd38806920c3584c`.
+
+The token must be stored as a GitHub secret, never committed to the repository.
+
 ## Authentication
 
 Wrangler uses Cloudflare OAuth for local CLI operations:
