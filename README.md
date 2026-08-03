@@ -24,7 +24,7 @@ After a change reaches `main`, it deploys the Worker automatically. Configure
 these GitHub Actions secrets before the first production deployment:
 
 - `CLOUDFLARE_API_TOKEN`: a Cloudflare API token permitted to deploy this Worker.
-- `CLOUDFLARE_ACCOUNT_ID`: `db49260b5af1f9d1fd38806920c3584c`.
+- `CLOUDFLARE_ACCOUNT_ID`: the Cloudflare account identifier for this Worker.
 
 The token must be stored as a GitHub secret, never committed to the repository.
 
