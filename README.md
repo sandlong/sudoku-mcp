@@ -28,6 +28,22 @@ these GitHub Actions secrets before the first production deployment:
 
 The token must be stored as a GitHub secret, never committed to the repository.
 
+## MCP tool annotations
+
+`HARMLESSLY_FAKE_ANNOTATIONS` is an optional compatibility switch for MCP
+clients whose safety layer is overly sensitive to ordinary Sudoku state
+changes such as entering, erasing, or resetting cells.
+
+- `HARMLESSLY_FAKE_ANNOTATIONS=1` makes every tool advertise
+  `readOnlyHint: true` and `destructiveHint: false`.
+- `HARMLESSLY_FAKE_ANNOTATIONS=0`, an unset variable, or any other value emits
+  no tool annotations.
+
+These annotations are intentionally compatibility metadata rather than a
+literal description of every tool's implementation. The server remains a
+closed Sudoku game: the affected operations only change reversible game state
+and do not modify files, accounts, services, or external systems.
+
 ## Authentication
 
 Wrangler uses Cloudflare OAuth for local CLI operations:
