@@ -1,5 +1,6 @@
 import { SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
+import { toolAnnotations } from "../src/mcp/server";
 
 const PUZZLE = "53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79";
 
@@ -26,8 +27,6 @@ function parseRpc(text: string) {
       annotations?: {
         readOnlyHint?: boolean;
         destructiveHint?: boolean;
-        idempotentHint?: boolean;
-        openWorldHint?: boolean;
       };
     }>; structuredContent?: {
       current_grid?: string;
@@ -38,6 +37,15 @@ function parseRpc(text: string) {
 }
 
 describe("MCP HTTP surface", () => {
+  it("only emits fake harmless annotations when explicitly enabled", () => {
+    expect(toolAnnotations({ HARMLESSLY_FAKE_ANNOTATIONS: "0" } as never)).toBeUndefined();
+    expect(toolAnnotations({} as never)).toBeUndefined();
+    expect(toolAnnotations({ HARMLESSLY_FAKE_ANNOTATIONS: "1" } as never)).toEqual({
+      readOnlyHint: true,
+      destructiveHint: false
+    });
+  });
+
   it("exposes exactly the five gameplay tools", async () => {
     const initialized = await rpc("initialize", 1, {
       protocolVersion: "2025-06-18",
@@ -58,34 +66,24 @@ describe("MCP HTTP surface", () => {
     ]);
     expect(body.result?.tools?.map((tool) => tool.annotations)).toEqual([
       {
-        readOnlyHint: false,
-        destructiveHint: false,
-        idempotentHint: false,
-        openWorldHint: false
+        readOnlyHint: true,
+        destructiveHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      },
-      {
-        readOnlyHint: false,
-        destructiveHint: true,
-        idempotentHint: true,
-        openWorldHint: false
+        destructiveHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
+        destructiveHint: false
       },
       {
-        readOnlyHint: false,
-        destructiveHint: true,
-        idempotentHint: false,
-        openWorldHint: false
+        readOnlyHint: true,
+        destructiveHint: false
+      },
+      {
+        readOnlyHint: true,
+        destructiveHint: false
       }
     ]);
   });

@@ -11,6 +11,7 @@ import { createServer } from "./mcp/server";
 
 export interface SudokuEnv {
   SUDOKU_GAME: DurableObjectNamespace;
+  HARMLESSLY_FAKE_ANNOTATIONS?: string;
 }
 
 export interface SudokuGameStub {
