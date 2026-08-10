@@ -21,7 +21,15 @@ function parseRpc(text: string) {
     .split("\n")
     .find((line) => line.startsWith("data: "));
   return JSON.parse(dataLine ? dataLine.slice("data: ".length) : text) as {
-    result?: { tools?: Array<{ name: string }>; structuredContent?: {
+    result?: { tools?: Array<{
+      name: string;
+      annotations?: {
+        readOnlyHint?: boolean;
+        destructiveHint?: boolean;
+        idempotentHint?: boolean;
+        openWorldHint?: boolean;
+      };
+    }>; structuredContent?: {
       current_grid?: string;
       board?: string;
       game_id?: string;
@@ -47,6 +55,38 @@ describe("MCP HTTP surface", () => {
       "play_move",
       "check_game",
       "reset_game"
+    ]);
+    expect(body.result?.tools?.map((tool) => tool.annotations)).toEqual([
+      {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false
+      },
+      {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      },
+      {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false
+      },
+      {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      },
+      {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false
+      }
     ]);
   });
 

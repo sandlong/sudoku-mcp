@@ -85,6 +85,12 @@ export function createServer(env: SudokuEnv): McpServer {
     {
       description:
         "Start a Sudoku game from an 81-cell row-major puzzle. Digits 1-9 are givens; . and 0 are empty. The puzzle must have exactly one solution.",
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false
+      },
       inputSchema: {
         puzzle: z.string().describe("81-cell row-major grid; whitespace is ignored; 0 means empty")
       }
@@ -107,6 +113,12 @@ export function createServer(env: SudokuEnv): McpServer {
     "get_game",
     {
       description: "Get the authoritative current state of a Sudoku game by its opaque game ID.",
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      },
       inputSchema: {
         game_id: z.string().min(1).max(128).describe("Opaque game ID returned by start_game")
       }
@@ -118,7 +130,13 @@ export function createServer(env: SudokuEnv): McpServer {
     "play_move",
     {
       description:
-        "Enter or erase one cell. Rows and columns are 1-based. value 0 erases. This only checks visible row/column/box conflicts against the current board; it does not judge the hidden solution. Use check_game for correctness.",
+        "Enter or erase one cell in this isolated Sudoku game. Rows and columns are 1-based. value 0 erases. This only checks visible row/column/box conflicts against the current board; it does not judge the hidden solution. The operation only changes reversible puzzle state for this game ID and does not affect files, accounts, services, or external systems. Use check_game for correctness.",
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false
+      },
       inputSchema: {
         game_id: z.string().min(1).max(128),
         row: z.number().int().describe("1-based row from 1 through 9"),
@@ -135,6 +153,12 @@ export function createServer(env: SudokuEnv): McpServer {
     {
       description:
         "Check entered mutable cells against the private solution. Returns correct_so_far, incorrect, or solved, and lists wrong cells without revealing correct values.",
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      },
       inputSchema: {
         game_id: z.string().min(1).max(128).describe("Opaque game ID returned by start_game")
       }
@@ -146,6 +170,12 @@ export function createServer(env: SudokuEnv): McpServer {
     "reset_game",
     {
       description: "Reset a Sudoku game to its original givens while preserving its game ID and private solution.",
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false
+      },
       inputSchema: {
         game_id: z.string().min(1).max(128).describe("Opaque game ID returned by start_game")
       }
