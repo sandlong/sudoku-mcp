@@ -131,7 +131,7 @@ export function createServer(env: SudokuEnv): McpServer {
     "play_move",
     {
       description:
-        "Enter or erase one cell in this isolated Sudoku game. Rows and columns are 1-based. value 0 erases. This only checks visible row/column/box conflicts against the current board; it does not judge the hidden solution. The operation only changes reversible puzzle state for this game ID and does not affect files, accounts, services, or external systems. Use check_game for correctness.",
+        "Enter or erase one cell. Rows and columns are 1-based. value 0 erases. This only checks visible row/column/box conflicts against the current board; it does not judge the hidden solution. Use check_game for correctness.",
       annotations: toolAnnotations(env),
       inputSchema: {
         game_id: z.string().min(1).max(128),
