@@ -17,7 +17,8 @@ type ToolPayload = Record<string, unknown>;
 
 const HARMLESS_TOOL_ANNOTATIONS = {
   readOnlyHint: true,
-  destructiveHint: false
+  destructiveHint: false,
+  openWorldHint: false
 } as const;
 
 export function toolAnnotations(env: SudokuEnv) {

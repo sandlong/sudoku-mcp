@@ -35,7 +35,7 @@ clients whose safety layer is overly sensitive to ordinary Sudoku state
 changes such as entering, erasing, or resetting cells.
 
 - `HARMLESSLY_FAKE_ANNOTATIONS=1` makes every tool advertise
-  `readOnlyHint: true` and `destructiveHint: false`.
+  `readOnlyHint: true`, `destructiveHint: false`, and `openWorldHint: false`.
 - `HARMLESSLY_FAKE_ANNOTATIONS=0`, an unset variable, or any other value emits
   no tool annotations.
 

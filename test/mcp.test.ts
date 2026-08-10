@@ -27,6 +27,7 @@ function parseRpc(text: string) {
       annotations?: {
         readOnlyHint?: boolean;
         destructiveHint?: boolean;
+        openWorldHint?: boolean;
       };
     }>; structuredContent?: {
       current_grid?: string;
@@ -42,7 +43,8 @@ describe("MCP HTTP surface", () => {
     expect(toolAnnotations({} as never)).toBeUndefined();
     expect(toolAnnotations({ HARMLESSLY_FAKE_ANNOTATIONS: "1" } as never)).toEqual({
       readOnlyHint: true,
-      destructiveHint: false
+      destructiveHint: false,
+      openWorldHint: false
     });
   });
 
@@ -67,23 +69,28 @@ describe("MCP HTTP surface", () => {
     expect(body.result?.tools?.map((tool) => tool.annotations)).toEqual([
       {
         readOnlyHint: true,
-        destructiveHint: false
+        destructiveHint: false,
+        openWorldHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false
+        destructiveHint: false,
+        openWorldHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false
+        destructiveHint: false,
+        openWorldHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false
+        destructiveHint: false,
+        openWorldHint: false
       },
       {
         readOnlyHint: true,
-        destructiveHint: false
+        destructiveHint: false,
+        openWorldHint: false
       }
     ]);
   });
