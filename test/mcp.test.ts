@@ -1,5 +1,6 @@
-import { SELF } from "cloudflare:test";
+import { SELF, createExecutionContext, env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
+import { handleRequest } from "../src/index";
 import { toolAnnotations } from "../src/mcp/server";
 
 const PUZZLE = "53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79";
@@ -38,6 +39,35 @@ function parseRpc(text: string) {
 }
 
 describe("MCP HTTP surface", () => {
+  it("keeps /mcp when SECRET_PATH is unset", async () => {
+    const response = await SELF.fetch("https://sudoku.test/");
+    expect(await response.json()).toEqual({ name: "sudoku-mcp", mcp_endpoint: "/mcp", status: "ok" });
+  });
+
+  it("only serves the MCP at the configured secret path", async () => {
+    const secretEnv = { ...env, SECRET_PATH: " example-secret " };
+    const request = (path: string) => new Request(`https://sudoku.test${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "initialize",
+        params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "vitest", version: "1.0.0" } }
+      })
+    });
+
+    const root = await handleRequest(new Request("https://sudoku.test/"), secretEnv, createExecutionContext());
+    expect(await root.json()).toEqual({ name: "sudoku-mcp", status: "ok" });
+    for (const path of ["/mcp", "/wrong/mcp", "/example-secret/mcp-more"]) {
+      const response = await handleRequest(request(path), secretEnv, createExecutionContext());
+      expect(response.status).toBe(404);
+    }
+    for (const path of ["/example-secret/mcp", "/example-secret/mcp/"]) {
+      const response = await handleRequest(request(path), secretEnv, createExecutionContext());
+      expect(response.status).toBe(200);
+      expect(parseRpc(await response.text()).result).toBeDefined();
+    }
+  });
+
   it("only emits fake harmless annotations when explicitly enabled", () => {
     expect(toolAnnotations({ HARMLESSLY_FAKE_ANNOTATIONS: "0" } as never)).toBeUndefined();
     expect(toolAnnotations({} as never)).toBeUndefined();

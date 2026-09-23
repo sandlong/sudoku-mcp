@@ -12,6 +12,7 @@ import { createServer } from "./mcp/server";
 export interface SudokuEnv {
   SUDOKU_GAME: DurableObjectNamespace;
   HARMLESSLY_FAKE_ANNOTATIONS?: string;
+  SECRET_PATH?: string;
 }
 
 export interface SudokuGameStub {
@@ -22,18 +23,22 @@ export interface SudokuGameStub {
   resetGame(now: number): Promise<RpcResult<GameSnapshot>>;
 }
 
-const worker: ExportedHandler<SudokuEnv> = {
-  fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    if (url.pathname === "/mcp" || url.pathname === "/mcp/") {
-      return createMcpHandler(() => createServer(env))(request, env, ctx);
-    }
-    if (url.pathname === "/") {
-      return Response.json({ name: "sudoku-mcp", mcp_endpoint: "/mcp", status: "ok" });
-    }
-    return new Response("Not found", { status: 404 });
+export function handleRequest(request: Request, env: SudokuEnv, ctx: ExecutionContext) {
+  const url = new URL(request.url);
+  const secretPath = (env.SECRET_PATH ?? "").trim().replace(/^\/+|\/+$/g, "");
+  const mcpPath = secretPath ? `/${secretPath}/mcp` : "/mcp";
+  if (url.pathname === mcpPath || url.pathname === `${mcpPath}/`) {
+    return createMcpHandler(() => createServer(env), { route: url.pathname })(request, env, ctx);
   }
-};
+  if (url.pathname === "/") {
+    return Response.json(secretPath
+      ? { name: "sudoku-mcp", status: "ok" }
+      : { name: "sudoku-mcp", mcp_endpoint: mcpPath, status: "ok" });
+  }
+  return new Response("Not found", { status: 404 });
+}
+
+const worker: ExportedHandler<SudokuEnv> = { fetch: handleRequest };
 
 export { SudokuGame };
 export default worker;

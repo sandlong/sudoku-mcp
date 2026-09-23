@@ -17,6 +17,18 @@ npm run dev
 The root endpoint is a health response; MCP clients should use
 `http://localhost:8787/mcp`.
 
+## Optional secret path
+
+Set the Worker secret `SECRET_PATH` to a hard-to-guess path string to move the
+MCP endpoint to `/<SECRET_PATH>/mcp`. For example, a value of `example-secret`
+would make the endpoint `/example-secret/mcp`; `/mcp` then returns 404.
+When `SECRET_PATH` is unset or empty, the endpoint stays at `/mcp`.
+
+Set the secret in the Cloudflare dashboard or with `npx wrangler secret put
+SECRET_PATH`. For local development, place it in a git-ignored `.dev.vars` file.
+When enabled, the root health response does not publish the secret path.
+Anyone who learns the complete URL can still access the MCP.
+
 ## Automatic deployment
 
 `.github/workflows/deploy.yml` runs the tests and type-check on pull requests.
