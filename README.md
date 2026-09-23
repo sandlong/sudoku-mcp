@@ -31,14 +31,9 @@ Anyone who learns the complete URL can still access the MCP.
 
 ## Automatic deployment
 
-`.github/workflows/deploy.yml` runs the tests and type-check on pull requests.
-After a change reaches `main`, it deploys the Worker automatically. Configure
-these GitHub Actions secrets before the first production deployment:
+Cloudflare Workers Builds connects this repository's `main` branch to the existing `sudoku-mcp` Worker. Pushing to `main` deploys it after the tests and type-check pass. The Worker name and Durable Object binding are declared in `wrangler.jsonc`.
 
-- `CLOUDFLARE_API_TOKEN`: a Cloudflare API token permitted to deploy this Worker.
-- `CLOUDFLARE_ACCOUNT_ID`: the Cloudflare account identifier for this Worker.
-
-The token must be stored as a GitHub secret, never committed to the repository.
+The optional `SECRET_PATH` binding is configured on the production Worker and persists across deployments. For manual deployment, run `npm ci`, `npm test`, `npm run build`, and `npm run deploy`.
 
 ## MCP tool annotations
 
