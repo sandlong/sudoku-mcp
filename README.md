@@ -33,13 +33,14 @@ Anyone who learns the complete URL can still access the MCP.
 
 Cloudflare Workers Builds connects this repository's `main` branch to the existing `sudoku-mcp` Worker. Pushing to `main` deploys it after the tests and type-check pass. The Worker name and Durable Object binding are declared in `wrangler.jsonc`.
 
-The optional `SECRET_PATH` binding is configured on the production Worker and persists across deployments. For manual deployment, run `npm ci`, `npm test`, `npm run build`, and `npm run deploy`.
+Production runtime variables and secrets are managed in the Cloudflare dashboard, which is the canonical source for them. `wrangler.jsonc` sets `keep_vars: true` and intentionally does not declare runtime variables or secrets, so dashboard-managed variables are preserved across deployments. For manual deployment, run `npm ci`, `npm test`, `npm run build`, and `npm run deploy`.
 
 ## MCP tool annotations
 
 `HARMLESSLY_FAKE_ANNOTATIONS` is an optional compatibility switch for MCP
 clients whose safety layer is overly sensitive to ordinary Sudoku state
-changes such as entering, erasing, or resetting cells.
+changes such as entering, erasing, or resetting cells. Set it as a production
+Worker variable in the Cloudflare dashboard when needed.
 
 - `HARMLESSLY_FAKE_ANNOTATIONS=1` makes every tool advertise
   `readOnlyHint: true`, `destructiveHint: false`, and `openWorldHint: false`.
