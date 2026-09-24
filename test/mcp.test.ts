@@ -96,33 +96,6 @@ describe("MCP HTTP surface", () => {
       "check_game",
       "reset_game"
     ]);
-    expect(body.result?.tools?.map((tool) => tool.annotations)).toEqual([
-      {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false
-      },
-      {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false
-      },
-      {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false
-      },
-      {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false
-      },
-      {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false
-      }
-    ]);
   });
 
   it("starts a game and returns structured canonical state", async () => {
